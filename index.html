@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Jenny Yu — Portfolio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/page-flip/dist/js/page-flip.browser.js"></script>
+
+  <style>
+  /* ─────────────────────────────────────────
+     RESET & TOKENS
+  ───────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:    #EAE5DC;
+    --page:  #FEFCF8;
+    --ink:   #1A1A18;
+    --muted: #8C877E;
+    --gold:  #A8865C;
+    --rule:  #DDD8CE;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  /* ─────────────────────────────────────────
+     LAYOUT
+  ───────────────────────────────────────── */
+  #app {
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+
+  #book-wrap {
+    flex: 1; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 36px 28px 12px;
+    min-height: 0;
+  }
+
+  /* ensure pages beneath the flipping page are visible during animation */
+  .stf__parent { overflow: visible !important; }
+  .stf__block  { overflow: visible !important; }
+
+  /* ─────────────────────────────────────────
+     CONTROLS
+  ───────────────────────────────────────── */
+  #controls {
+    flex-shrink: 0; height: 60px;
+    display: flex; align-items: center; justify-content: center; gap: 18px;
+  }
+
+  .nav-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid var(--rule);
+    background: rgba(254,252,248,.88);
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, border-color .2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-btn:hover     { background: var(--ink); border-color: var(--ink); }
+  .nav-btn:hover svg { stroke: #fff; }
+  .nav-btn svg {
+    width: 13px; height: 13px;
+    stroke: var(--ink); stroke-width: 1.8;
+    fill: none; transition: stroke .2s;
+  }
+
+  #indicator {
+    font: 300 11px/1 'Inter', sans-serif;
+    letter-spacing: .18em; color: var(--muted);
+    min-width: 52px; text-align: center;
+  }
+
+  /* ─────────────────────────────────────────
+     PAGES — shared
+  ───────────────────────────────────────── */
+  .page {
+    background: var(--page);
+    overflow: hidden; position: relative;
+    user-select: none; -webkit-user-select: none;
+  }
+  .page::after {
+    content: ''; position: absolute; inset: 0;
+    box-shadow: inset 0 0 28px rgba(0,0,0,.03);
+    pointer-events: none;
+  }
+
+  .pg-num {
+    position: absolute; bottom: 26px;
+    font: 300 9px/1 'Inter', sans-serif;
+    letter-spacing: .2em; color: var(--rule);
+  }
+  .pg-num.l { left: 38px; }
+  .pg-num.r { right: 38px; }
+
+  /* shared text atoms */
+  .eyebrow {
+    display: block;
+    font: 400 9px/1 'Inter', sans-serif;
+    letter-spacing: .38em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 28px;
+  }
+  .pg-heading {
+    font: 300 clamp(24px,3vw,38px)/1.1 'Cormorant Garamond', serif;
+    letter-spacing: .02em; color: var(--ink); margin-bottom: 22px;
+  }
+  .pg-body {
+    font: 300 clamp(11px,1.05vw,12.5px)/1.82 'Inter', sans-serif;
+    color: #5E5A55;
+  }
+  .pg-body p + p { margin-top: .95em; }
+
+  /* ─────────────────────────────────────────
+     FRONT COVER
+  ───────────────────────────────────────── */
+  .page.p-cover {
+    background-color: var(--ink);
+    background-image:
+      linear-gradient(
+        to bottom,
+        rgba(20,18,16,.82) 0%,
+        rgba(20,18,16,.68) 40%,
+        rgba(20,18,16,.82) 100%
+      ),
+      url('IMG_3398.jpg');
+    background-size: cover;
+    background-position: center 30%;
+  }
+
+  .cover-inner {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 56px 48px;
+  }
+  .cover-inner::before {
+    content: ''; position: absolute; inset: 14px;
+    border: 1px solid rgba(255,255,255,.1); pointer-events: none;
+  }
+
+  .cov-eyebrow {
+    font: 400 9px/1 'Inter', sans-serif;
+    letter-spacing: .42em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 56px; display: block;
+  }
+  .cov-name {
+    font: 300 clamp(38px,7vw,68px)/1.05 'Cormorant Garamond', serif;
+    letter-spacing: .04em; text-align: center; color: #fff; margin-bottom: 18px;
+  }
+  .cov-sub {
+    font: 300 italic clamp(14px,1.8vw,20px)/1 'Cormorant Garamond', serif;
+    letter-spacing: .1em; color: rgba(255,255,255,.4);
+  }
+  .cov-vol {
+    position: absolute; bottom: 38px;
+    font: 300 9px/1 'Inter', sans-serif;
+    letter-spacing: .28em; color: rgba(255,255,255,.18);
+  }
+
+  /* ─────────────────────────────────────────
+     INSIDE COVER — decorative
+  ───────────────────────────────────────── */
+  .page.p-deco { display: flex; align-items: center; justify-content: center; }
+  .deco-mark   { width: 60px; height: 60px; opacity: .09; }
+
+  /* ─────────────────────────────────────────
+     COLLECTION TITLE PAGE (page 2)
+  ───────────────────────────────────────── */
+  .page.p-title {
+    display: flex; flex-direction: column;
+    align-items: flex-start; justify-content: flex-end;
+    padding: 56px 44px;
+  }
+  .title-label {
+    font: 400 9px/1 'Inter', sans-serif;
+    letter-spacing: .38em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 14px; display: block;
+  }
+  .title-main {
+    font: 300 clamp(32px,4.2vw,54px)/1 'Cormorant Garamond', serif;
+    letter-spacing: .03em; color: var(--ink); margin-bottom: 12px;
+  }
+  .title-sub {
+    font: 300 italic clamp(13px,1.4vw,16px)/1 'Cormorant Garamond', serif;
+    letter-spacing: .08em; color: var(--muted); margin-bottom: 40px;
+  }
+
+  /* ─────────────────────────────────────────
+     ARTIST STATEMENT — two-page spread
+     Page 3 (left) + Page 4 (right)
+  ───────────────────────────────────────── */
+  .page.p-stmt { padding: 52px 44px; }
+
+  /* right continuation page: no heading, more breathing room */
+  .page.p-stmt-cont {
+    padding: 52px 44px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .stmt-rule {
+    width: 32px; height: 1px; background: var(--gold);
+    margin-bottom: 28px; display: block;
+  }
+
+  /* ─────────────────────────────────────────
+     BIOGRAPHY — two-page spread
+     Page 5 (left) + Page 6 (right)
+  ───────────────────────────────────────── */
+  .page.p-bio { padding: 52px 44px; }
+
+  .page.p-bio-cont {
+    padding: 52px 44px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+
+  /* pull-quote treatment for final bio paragraph */
+  .bio-closing {
+    font: 300 italic clamp(16px,1.8vw,22px)/1.6 'Cormorant Garamond', serif;
+    color: var(--ink);
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 36px;
+  }
+
+  /* mini exhibitions on bio cont page */
+  .mini-exh-list { list-style: none; }
+  .mini-exh-item {
+    display: flex; gap: 14px; align-items: baseline;
+    border-bottom: 1px solid var(--rule); padding: 9px 0;
+  }
+  .mini-exh-yr {
+    font: 300 10px/1 'Inter', sans-serif;
+    letter-spacing: .1em; color: var(--muted); flex-shrink: 0; width: 34px;
+  }
+  .mini-exh-name {
+    font: 400 13px/1.3 'Cormorant Garamond', serif; color: var(--ink);
+  }
+
+  /* ─────────────────────────────────────────
+     QUOTE / TRANSITION PAGE
+  ───────────────────────────────────────── */
+  .page.p-quote {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-end;
+    padding: 56px 44px 30% 44px;
+    background: #080808;
+  }
+  .quote-line {
+    font: 300 italic clamp(22px,3vw,38px)/1.2 'Cormorant Garamond', serif;
+    letter-spacing: .08em; color: #fff; text-align: center;
+    font-style: italic;
+  }
+
+  /* ─────────────────────────────────────────
+     FULL-BLEED IMAGE PAGE
+  ───────────────────────────────────────── */
+  .page.p-fullbleed { padding: 0; }
+  .page.p-fullbleed img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+  }
+
+  /* ─────────────────────────────────────────
+     ARTWORK PAGES
+  ───────────────────────────────────────── */
+  .page.p-art {
+    display: flex; flex-direction: column;
+    padding: 34px 34px 44px;
+  }
+  .art-frame { flex: 1; overflow: hidden; margin-bottom: 16px; }
+  .art-frame img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    filter: brightness(.97) saturate(.88);
+  }
+  /* artwork 07 — restore full vibrancy */
+  #art-07 .art-frame img { filter: brightness(0.94) saturate(1.12); }
+  #art-08 .art-frame img { filter: brightness(1.08) saturate(.88); }
+  .art-caption { flex-shrink: 0; }
+  .art-title {
+    font: 400 italic clamp(15px,1.6vw,20px)/1 'Cormorant Garamond', serif;
+    color: var(--ink); margin-bottom: 5px;
+  }
+  .art-meta {
+    font: 300 10px/1 'Inter', sans-serif;
+    letter-spacing: .12em; color: var(--muted);
+  }
+
+  /* ─────────────────────────────────────────
+     DETAIL PAGES
+  ───────────────────────────────────────── */
+  .page.p-detail {
+    padding: 54px 44px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .d-num {
+    font: 300 clamp(52px,7vw,90px)/1 'Cormorant Garamond', serif;
+    color: var(--rule); margin-bottom: 18px;
+  }
+  .d-title {
+    font: 400 clamp(20px,2.4vw,30px)/1.15 'Cormorant Garamond', serif;
+    letter-spacing: .02em; color: var(--ink); margin-bottom: 16px;
+  }
+  .d-desc {
+    font: 300 clamp(11px,1.05vw,13px)/1.95 'Inter', sans-serif;
+    color: #676460; margin-bottom: 28px;
+  }
+  .specs {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px 6px;
+    border-top: 1px solid var(--rule); padding-top: 20px;
+  }
+  .sk {
+    font: 400 8.5px/1 'Inter', sans-serif;
+    letter-spacing: .24em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
+  }
+  .sv { font: 400 13.5px/1 'Cormorant Garamond', serif; color: var(--ink); }
+
+  /* long descriptions — only shrink the description text */
+  #detail-01 .d-desc { font-size: 9.5px; line-height: 1.65; }
+  #detail-03 .d-desc { font-size: 9.5px; line-height: 1.65; }
+  #detail-04 .d-desc { font-size: 9.5px; line-height: 1.65; }
+
+  /* ─────────────────────────────────────────
+     CONTACT PAGE
+  ───────────────────────────────────────── */
+  .page.p-contact {
+    padding: 56px 44px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .contact-name {
+    font: 300 clamp(30px,3.8vw,50px)/1.1 'Cormorant Garamond', serif;
+    letter-spacing: .03em; color: var(--ink); margin-top: 6px;
+  }
+  .contact-rows { list-style: none; }
+  .cr {
+    display: flex; align-items: baseline; gap: 14px;
+    border-bottom: 1px solid var(--rule); padding: 11px 0;
+  }
+  .cr-k {
+    font: 400 8.5px/1 'Inter', sans-serif;
+    letter-spacing: .24em; text-transform: uppercase;
+    color: var(--muted); flex-shrink: 0; width: 66px;
+  }
+  .cr-v { font: 400 14px/1 'Cormorant Garamond', serif; color: var(--ink); }
+  .contact-copy {
+    font: 300 9.5px/1 'Inter', sans-serif;
+    letter-spacing: .14em; color: var(--rule);
+  }
+
+  /* ─────────────────────────────────────────
+     EXHIBITIONS PAGE
+  ───────────────────────────────────────── */
+  .page.p-exh { padding: 56px 44px; }
+  .exh-list   { list-style: none; margin-top: 6px; }
+  .exh-item {
+    display: flex; gap: 16px; align-items: baseline;
+    border-bottom: 1px solid var(--rule); padding: 10px 0;
+  }
+  .exh-yr {
+    font: 300 11px/1 'Inter', sans-serif;
+    letter-spacing: .1em; color: var(--muted); flex-shrink: 0; width: 36px;
+  }
+  .exh-name { font: 400 14px/1.35 'Cormorant Garamond', serif; color: var(--ink); }
+
+  /* ─────────────────────────────────────────
+     CLOSING PAGE (page 16)
+  ───────────────────────────────────────── */
+  .page.p-closing {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 56px 44px; text-align: center;
+  }
+  .closing-mark { width: 40px; height: 40px; opacity: .15; margin-bottom: 32px; }
+  .closing-name {
+    font: 300 clamp(20px,2.5vw,30px)/1.2 'Cormorant Garamond', serif;
+    letter-spacing: .08em; color: var(--ink); margin-bottom: 12px;
+  }
+  .closing-tagline {
+    font: 300 italic 13px/1.6 'Cormorant Garamond', serif;
+    letter-spacing: .04em; color: var(--muted); max-width: 260px;
+  }
+
+  /* ─────────────────────────────────────────
+     BACK COVER
+  ───────────────────────────────────────── */
+  .page.p-back {
+    background: var(--ink);
+    display: flex; align-items: flex-end; padding: 44px;
+  }
+  .back-mono {
+    font: 300 100px/1 'Cormorant Garamond', serif;
+    color: rgba(255,255,255,.05);
+  }
+
+  /* ─────────────────────────────────────────
+     LOADER
+  ───────────────────────────────────────── */
+  #loader {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity .55s ease;
+  }
+  #loader.out { opacity: 0; pointer-events: none; }
+  .loader-name {
+    font: 300 27px/1 'Cormorant Garamond', serif;
+    letter-spacing: .18em; color: var(--ink);
+    animation: rise .7s .15s both;
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─────────────────────────────────────────
+     MOBILE
+  ───────────────────────────────────────── */
+  @media (max-width: 640px) {
+    #book-wrap           { padding: 16px 10px 8px; }
+    .page.p-stmt,
+    .page.p-stmt-cont,
+    .page.p-bio,
+    .page.p-bio-cont,
+    .page.p-contact,
+    .page.p-closing      { padding: 36px 26px; }
+    .page.p-art          { padding: 22px 22px 32px; }
+    .page.p-detail       { padding: 34px 26px; }
+    .page.p-title        { padding: 40px 28px; }
+    .pg-num.l            { left: 22px; }
+    .pg-num.r            { right: 22px; }
+  }
+  </style>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loader"><span class="loader-name">Jenny Yu</span></div>
+
+<div id="app">
+  <div id="book-wrap">
+    <div id="book">
+
+      <!-- 0 · Front Cover ───────────────── -->
+      <div class="page p-cover">
+        <div class="cover-inner">
+          <span class="cov-eyebrow">Works 2020 – 2024</span>
+          <h1 class="cov-name">Jenny<br>Yu</h1>
+          <p class="cov-sub">Fragments of Light</p>
+          <span class="cov-vol">Vol. I</span>
+        </div>
+      </div>
+
+      <!-- 1 · Inside Cover (deco) ────────── L of spread 1 -->
+      <div class="page p-deco">
+        <svg class="deco-mark" viewBox="0 0 60 60" fill="none">
+          <circle cx="30" cy="30" r="28"  stroke="#1A1A18" stroke-width="1"/>
+          <circle cx="30" cy="30" r="17"  stroke="#1A1A18" stroke-width=".5"/>
+          <circle cx="30" cy="30" r="6"   stroke="#1A1A18" stroke-width=".5"/>
+          <line x1="30" y1="2"  x2="30" y2="58" stroke="#1A1A18" stroke-width=".5"/>
+          <line x1="2"  y1="30" x2="58" y2="30" stroke="#1A1A18" stroke-width=".5"/>
+        </svg>
+        <span class="pg-num l">—</span>
+      </div>
+
+      <!-- 2 · Collection Title ───────────── R of spread 1 -->
+      <div class="page p-title">
+        <span class="title-label">Selected Works</span>
+        <h2 class="title-main">Fragments<br>of Light</h2>
+        <p class="title-sub">A Collection by Jenny Yu · 2020–2024</p>
+        <span class="pg-num r">02</span>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SPREAD 2 · Artist Statement (both pages visible together)
+      ══════════════════════════════════════ -->
+
+      <!-- 3 · Statement pt 1 ─────────────── L of spread 2 -->
+      <div class="page p-stmt">
+        <span class="eyebrow">Artist Statement</span>
+        <h2 class="pg-heading">Born Between<br>Worlds</h2>
+        <div class="pg-body">
+          <p>I was born on a plane. literally between worlds, mid-flight, mid-journey, belonging to no single place. I grew up in Shanghai and later studied in New York, Florence, and Paris. I have lived my entire life in the in-between.</p>
+          <p>When I moved to the United States as a teenager, I was lost in the way that only displacement can create—not just geographically, but emotionally. I didn't have the words for what I was feeling. So I picked up a brush.</p>
+          <p>Painting gave me what nothing else could: clarity. A way to see myself. A way to process a world that felt overwhelming, beautiful, and confusing all at once. Art didn't just become something I loved—it became how I found direction.</p>
+        </div>
+        <span class="pg-num l">03</span>
+      </div>
+
+      <!-- 4 · Statement pt 2 ─────────────── R of spread 2 -->
+      <div class="page p-stmt-cont">
+        <span class="stmt-rule"></span>
+        <div class="pg-body">
+          <p>That experience never left me.</p>
+          <p>It became the question I carry into everything I do: what if more people had access to that clarity through my painting? What if art was not only experienced in galleries, but lived with—as a way to understand, to feel, to find clarity.</p>
+          <p>This belief continues to shape my work—creating immersive, atmospheric paintings that reflect inner landscapes and emotional states, inviting moments of stillness and reflection.</p>
+          <p>I don't seek to be remembered. I want the work—and the lives it touches—to carry forward long after I'm gone.</p>
+        </div>
+        <span class="pg-num r">04</span>
+      </div>
+
+      <!-- 5 · Transition quote ──────────── L of spread 3 -->
+      <div class="page p-quote">
+        <p class="quote-line">Then it begins…</p>
+      </div>
+
+      <!-- 6 · Mirror — full bleed ─────────── R of spread 3 -->
+      <div class="page p-fullbleed">
+        <img src="mirror.jpeg" alt="Mirror" loading="lazy">
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SPREAD 4 · Biography + Exhibitions (both pages visible together)
+      ══════════════════════════════════════ -->
+
+      <!-- 5 · Biography pt 1 ─────────────── L of spread 3 -->
+      <div class="page p-bio">
+        <span class="eyebrow">Selected Biography</span>
+        <h2 class="pg-heading">About<br>the Artist</h2>
+        <div class="pg-body">
+          <p>Jenny Yu (b. 1986) is a Manhattan-based artist whose work explores the intersection of emotional healing, memory, and sensory experience. Drawing inspiration from impressionist softness and abstract expression, her paintings evoke a dreamlike stillness — spaces where viewers are invited to slow down, reflect, and reconnect with themselves.</p>
+          <p>With a background in Economics and Art History from NYU, Jenny bridges the analytical and the intuitive. Her practice extends beyond the canvas into immersive art salons and curated experiences, where art becomes not only something to observe, but something to feel.</p>
+        </div>
+        <span class="pg-num l">05</span>
+      </div>
+
+      <!-- 6 · Biography pt 2 ────────────── R of spread 3 -->
+      <div class="page p-bio-cont">
+        <p class="bio-closing">Her work is deeply rooted in the belief that art has the power to heal, connect, and transform emotional landscapes.</p>
+        <span class="pg-num r">06</span>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           ARTWORKS — spreads 4 through 7
+      ══════════════════════════════════════ -->
+
+      <!-- 7 · Artwork 1 ──────────────────── L of spread 5 -->
+      <div class="page p-art">
+        <div class="art-frame">
+          <img src="IMG_3959.JPG" alt="幽玄" loading="lazy">
+        </div>
+        <div class="art-caption">
+          <p class="art-title">幽玄 (2020–2024)</p>
+          <p class="art-meta">Oil and Acrylics on Linen · 46 × 46 inch (116 × 116 cm)</p>
+        </div>
+        <span class="pg-num l">07</span>
+      </div>
+
+      <!-- 8 · Artwork 1 detail ───────────── R of spread 4 -->
+      <div class="page p-detail" id="detail-01">
+        <div class="d-num">01</div>
+        <h3 class="d-title">幽玄</h3>
+        <p class="d-desc">YŪGEN 幽玄 speaks to an elusive, intangible authenticity of beauty—one that cannot be fully seen or defined, but quietly felt within an object or moment. It is a presence rather than a form.<br><br>I began this painting in 2020, during the stillness of the pandemic, carrying a sense of unease and disappointment within myself. When I returned to it a year later, something had shifted. Where there was once heaviness, I began to notice light.<br><br>That passage of time transformed not only the work, but my way of seeing. Through darkness, I learned to recognize subtle radiance.<br><br>Yūgen, to me, is the understanding that beauty lives in ambiguity—in imperfection, in the unseen, and in the space where imagination completes what reality cannot.</p>
+        <div class="specs">
+          <div><div class="sk">Medium</div><div class="sv">Oil and Acrylics on Linen</div></div>
+          <div><div class="sk">Year</div><div class="sv">2020–2024</div></div>
+          <div><div class="sk">Dimensions</div><div class="sv">46 × 46 inch (116 × 116 cm)</div></div>
+          <div><div class="sk">Status</div><div class="sv">Available</div></div>
+        </div>
+        <span class="pg-num r">08</span>
+      </div>
+
+      <!-- 9 · Artwork 2 ──────────────────── L of spread 5 -->
+      <div class="page p-art">
+        <div class="art-frame">
+          <img src="flower painting.png" alt="The Edges of Dreams" loading="lazy">
+        </div>
+        <div class="art-caption">
+          <p class="art-title">The Edges of Dreams (2023)</p>
+          <p class="art-meta">Oil on Linens</p>
+        </div>
+        <span class="pg-num l">09</span>
+      </div>
+
+      <!-- 10 · Artwork 2 detail ──────────── R of spread 5 -->
+      <div class="page p-detail">
+        <div class="d-num">02</div>
+        <h3 class="d-title">The Edges of Dreams</h3>
+        <p class="d-desc">The boundaries of reality sometimes can be blurry, form dissolves and certainty gives way to feeling.<br><br>Layers of color move like shifting emotions—soft, luminous, and unresolved. I approached this painting as a process of release. The warmth seeps through in quiet bursts, while cooler tones hover like passing thoughts, never settling long enough to be named. There is no fixed subject, only a presence—something felt rather than seen.</p>
+        <div class="specs">
+          <div><div class="sk">Medium</div><div class="sv">Oil on Linens</div></div>
+          <div><div class="sk">Year</div><div class="sv">2023</div></div>
+          <div><div class="sk">Dimensions</div><div class="sv">Varies</div></div>
+          <div><div class="sk">Status</div><div class="sv">Prints available</div></div>
+        </div>
+        <span class="pg-num r">10</span>
+      </div>
+
+      <!-- 11 · Artwork 3 ─────────────────── L of spread 6 -->
+      <div class="page p-art">
+        <div class="art-frame">
+          <img src="IMG_3398.jpg" alt="A Quiet Between Worlds" loading="lazy">
+        </div>
+        <div class="art-caption">
+          <p class="art-title">A Quiet Between Worlds (2026)</p>
+          <p class="art-meta">Oil and Acrylics on Linen · 36 × 46 inch (91 × 116 cm)</p>
+        </div>
+        <span class="pg-num l">11</span>
+      </div>
+
+      <!-- 12 · Artwork 3 detail ──────────── R of spread 6 -->
+      <div class="page p-detail" id="detail-03">
+        <div class="d-num">03</div>
+        <h3 class="d-title">A Quiet Between Worlds</h3>
+        <p class="d-desc">I am drawn to the moments that do not fully belong anywhere—the in-between states where something is neither arriving nor leaving. This painting lives in that quiet threshold. It feels like a place, but also like a memory of a place, dissolving as you try to hold onto it.<br><br>The glowing forms suggest presence, yet they never fully materialize. Light emerges from within the darkness, but instead of revealing, it softens and obscures. In this way, the work exists in contradiction: it is both intimate and distant, vivid and unreachable. What is illuminated is not clarity, but ambiguity.<br><br>I began this piece with dark mixed purple on canvas, allowing the pigments to blend and resist each other organically. I was interested in how colors could create depth without defining form. How something could feel alive without being fully seen?<br><br>Through this process, I am not trying to depict a world, but a state of being, one that exists quietly between what is and what is felt.</p>
+        <div class="specs">
+          <div><div class="sk">Medium</div><div class="sv">Oil and Acrylics on Linen</div></div>
+          <div><div class="sk">Year</div><div class="sv">2026</div></div>
+          <div><div class="sk">Dimensions</div><div class="sv">36 × 46 inch (91 × 116 cm)</div></div>
+          <div><div class="sk">Status</div><div class="sv">Available</div></div>
+        </div>
+        <span class="pg-num r">12</span>
+      </div>
+
+      <!-- 13 · Artwork 4 NEW ───────────────── L of spread 7 -->
+      <div class="page p-art">
+        <div class="art-frame">
+          <img src="tides.jpeg" alt="Drifting Between Tides" loading="lazy">
+        </div>
+        <div class="art-caption">
+          <p class="art-title">Drifting Between Tides (2023)</p>
+          <p class="art-meta">Oil on Linen · 24 × 24 inch</p>
+        </div>
+        <span class="pg-num l">13</span>
+      </div>
+
+      <!-- 14 · Artwork 4 detail ──────────── R of spread 7 -->
+      <div class="page p-detail" id="detail-04">
+        <div class="d-num">04</div>
+        <h3 class="d-title">Drifting Between Tides</h3>
+        <p class="d-desc">There is a space between movement and stillness, where form loosens and certainty begins to dissolve. In this in-between, nothing fully belongs to the past or the present. It simply drifts.<br><br>I began this painting intuitively, allowing each gesture to follow a feeling rather than a defined image. Shapes emerged like fragments of memory, appearing and disappearing within layers of blue. Some areas feel held, while others slip away, as if pulled by an unseen current.<br><br>I am drawn to this state of suspension. It is a quiet tension of being neither anchored nor lost. The tides do not ask where you are going; they only carry you. In that surrender, there is both disorientation and peace.<br><br>This work reflects a moment of becoming, where clarity is not yet formed, but something deeper is already understood.</p>
+        <div class="specs">
+          <div><div class="sk">Medium</div><div class="sv">Oil on Linen</div></div>
+          <div><div class="sk">Year</div><div class="sv">2023</div></div>
+          <div><div class="sk">Dimensions</div><div class="sv">24 × 24 inch</div></div>
+          <div><div class="sk">Status</div><div class="sv">Available</div></div>
+        </div>
+        <span class="pg-num r">14</span>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SPREAD 8 · Artwork 5
+      ══════════════════════════════════════ -->
+
+      <!-- 15 · Artwork 5 ─────────────────── L of spread 8 -->
+      <div class="page p-art">
+        <div class="art-frame">
+          <img src="the pull.jpg" alt="The Pull" loading="lazy">
+        </div>
+        <div class="art-caption">
+          <p class="art-title">The Pull (2023)</p>
+          <p class="art-meta">Mixed Medium on Linen · 36 × 36 inch (92 × 92 cm)</p>
+        </div>
+        <span class="pg-num l">15</span>
+      </div>
+
+      <!-- 16 · Artwork 5 detail ──────────── R of spread 8 -->
+      <div class="page p-detail">
+        <div class="d-num">05</div>
+        <h3 class="d-title">The Pull</h3>
+        <p class="d-desc">This piece captures the feeling of being carried. Carried by water, by time, by something larger than yourself.<br><br>Soft yet dynamic brushstrokes swirl around a luminous, jellyfish-like form, creating a sense of both movement and stillness. Layers of deep ocean blues blend into airy turquoise and flashes of green, evoking a dreamlike underwater current. It is fluid, immersive, and calming.</p>
+        <div class="specs">
+          <div><div class="sk">Medium</div><div class="sv">Mixed Medium on Linen</div></div>
+          <div><div class="sk">Year</div><div class="sv">2023</div></div>
+          <div><div class="sk">Dimensions</div><div class="sv">36 × 36 inch (92 × 92 cm)</div></div>
+          <div><div class="sk">Status</div><div class="sv">Available</div></div>
+        </div>
+        <span class="pg-num r">16</span>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SPREAD 9 · Artwork 6
+      ══════════════════════════════════════ -->
+
+      <!-- 17 · Artwork 6 ─────────────────── L of spread 9 -->
+      <div class="page p-art">
+        <div class="art-frame">
+          <img src="IMG_3960.JPG" alt="Flowing Lilium" loading="lazy">
+        </div>
+        <div class="art-caption">
+          <p class="art-title">Flowing Lilium (2022)</p>
+          <p class="art-meta">Mixed Media on Linens · 18 × 24 inch</p>
+        </div>
+        <span class="pg-num l">17</span>
+      </div>
+
+      <!-- 18 · Artwork 6 detail ──────────── R of spread 9 -->
+      <div class="page p-detail">
+        <div class="d-num">06</div>
+        <h3 class="d-title">Flowing Lilium</h3>
+        <p class="d-desc">Do you feel the breeze? It's a lily flowing with the stream, drifting along the predetermined path in the vast ocean. It is so insignificant and yet so free. It is a small life appreciating their existence in the world.<br><br>A quiet moment where color softens into feeling. This piece captures the space between movement and stillness—where water, sky, and memory dissolve into one another, and something delicate begins to bloom.</p>
+        <div class="specs">
+          <div><div class="sk">Medium</div><div class="sv">Mixed Media on Linens</div></div>
+          <div><div class="sk">Year</div><div class="sv">2022</div></div>
+          <div><div class="sk">Dimensions</div><div class="sv">18 × 24 inch</div></div>
+          <div><div class="sk">Status</div><div class="sv">Available</div></div>
+        </div>
+        <span class="pg-num r">18</span>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SPREAD 10 · Artwork 7
+      ══════════════════════════════════════ -->
+
+      <!-- 19 · Artwork 7 ─────────────────── L of spread 10 -->
+      <div class="page p-art" id="art-07">
+        <div class="art-frame">
+          <img src="3C53BA86-DF4E-4C1B-B864-C7F7E29C021F.JPG" alt="Love" loading="lazy">
+        </div>
+        <div class="art-caption">
+          <p class="art-title">Love (2020)</p>
+          <p class="art-meta">Oil on Linen · 36 × 36 inch</p>
+        </div>
+        <span class="pg-num l">19</span>
+      </div>
+
+      <!-- 20 · Artwork 7 detail ──────────── R of spread 10 -->
+      <div class="page p-detail">
+        <div class="d-num">07</div>
+        <h3 class="d-title">Love</h3>
+        <p class="d-desc">If love were a color, I think it would be pink; maybe it will come with flaming red, warm yellow, dreamy pink, and a drip of chocolate.<br><br>Love comes in different forms. It expands, dissolves, and reforms all at once.<br><br>Love, to me, is not something we can fully define. It is something we move through.</p>
+        <div class="specs">
+          <div><div class="sk">Medium</div><div class="sv">Oil on Linen</div></div>
+          <div><div class="sk">Year</div><div class="sv">2020</div></div>
+          <div><div class="sk">Dimensions</div><div class="sv">36 × 36 inch</div></div>
+          <div><div class="sk">Status</div><div class="sv">Available</div></div>
+        </div>
+        <span class="pg-num r">20</span>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SPREAD 11 · Artwork 8
+      ══════════════════════════════════════ -->
+
+      <!-- 21 · Artwork 8 ─────────────────── L of spread 11 -->
+      <div class="page p-art" id="art-08">
+        <div class="art-frame">
+          <img src="Untitled_Artwork 3.jpg" alt="Lucid Dreaming" loading="lazy">
+        </div>
+        <div class="art-caption">
+          <p class="art-title">Lucid Dreaming (2022)</p>
+          <p class="art-meta">Digital Art · 36 × 46 inches, varies</p>
+        </div>
+        <span class="pg-num l">21</span>
+      </div>
+
+      <!-- 22 · Artwork 8 detail ──────────── R of spread 11 -->
+      <div class="page p-detail">
+        <div class="d-num">08</div>
+        <h3 class="d-title">Lucid Dreaming</h3>
+        <p class="d-desc">I am fascinated by the concept of shadows. Shadows outline the shapes of an object but fill it with voids. On one hand, they reveal the essence of the object. On the other hand, they capture nothing.<br><br>I started this artwork as an oil painting on canvas and later transformed it into a digital piece. I utilized patterns to capture the compounded effects of color, trying to create an illusion of shadows. Then, I used Procreate to transform this traditional oil painting into a digital work. Digital media allows me to magnify such effects of color through the contradiction in colors and saturation. In this way, I am magnifying both nonexistence and existence.</p>
+        <div class="specs">
+          <div><div class="sk">Medium</div><div class="sv">Digital Art</div></div>
+          <div><div class="sk">Year</div><div class="sv">2022</div></div>
+          <div><div class="sk">Dimensions</div><div class="sv">36 × 46 inches, varies</div></div>
+          <div><div class="sk">Available as</div><div class="sv">Glass Wall Art or Prints</div></div>
+        </div>
+        <span class="pg-num r">20</span>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SPREAD 10 · Exhibitions + Contact
+      ══════════════════════════════════════ -->
+
+      <!-- 19 · Exhibitions ──────────────── L of spread 10 -->
+      <div class="page p-exh">
+        <span class="eyebrow">Selected Exhibitions</span>
+        <h2 class="pg-heading">Exhibition<br>History</h2>
+        <ul class="exh-list">
+          <li class="exh-item"><span class="exh-yr">2026</span><span class="exh-name">Meng's Gallery, Noho, New York</span></li>
+          <li class="exh-item"><span class="exh-yr">2026</span><span class="exh-name">Williamsburg Penthouse Private Art Viewing, New York</span></li>
+          <li class="exh-item"><span class="exh-yr">2025</span><span class="exh-name">UN Conference Yacht Charity Art Auction, New York City</span></li>
+          <li class="exh-item"><span class="exh-yr">2025</span><span class="exh-name">Hamptons Art Auction, New York</span></li>
+          <li class="exh-item"><span class="exh-yr">2024</span><span class="exh-name">Huangpu River Solo Art Show, Shanghai, China</span></li>
+          <li class="exh-item"><span class="exh-yr">2023</span><span class="exh-name">Chelsea Solo Art Show, New York</span></li>
+        </ul>
+        <span class="pg-num l">19</span>
+      </div>
+
+      <!-- 20 · Contact ───────────────────── R of spread 10 -->
+      <div class="page p-contact">
+        <div>
+          <span class="eyebrow">Inquiries &amp; Representation</span>
+          <h2 class="contact-name">Jenny<br>Yu</h2>
+        </div>
+        <ul class="contact-rows">
+          <li class="cr"><span class="cr-k">Studio</span><span class="cr-v">New York, United States</span></li>
+          <li class="cr"><span class="cr-k">Email</span><span class="cr-v">Jennyprivategallery@gmail.com</span></li>
+          <li class="cr"><span class="cr-k">Gallery</span><span class="cr-v">Jenny Yu Private Gallery</span></li>
+          <li class="cr"><span class="cr-k">Web</span><span class="cr-v">jennyprivategallery.com</span></li>
+        </ul>
+        <span class="pg-num r">20</span>
+      </div>
+
+      <!-- 23 · Back Cover ────────────────── -->
+      <div class="page p-back">
+        <span class="back-mono">JY</span>
+      </div>
+
+    </div><!-- #book -->
+  </div><!-- #book-wrap -->
+
+  <div id="controls">
+    <button class="nav-btn" id="btn-prev" aria-label="Previous page">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span id="indicator">1 / 28</span>
+    <button class="nav-btn" id="btn-next" aria-label="Next page">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</div><!-- #app -->
+
+<script>
+window.addEventListener('load', () => setTimeout(init, 500));
+
+function init() {
+  const bookEl    = document.getElementById('book');
+  const indicator = document.getElementById('indicator');
+  const pages     = document.querySelectorAll('.page');
+  const total     = pages.length; // 18
+
+  function calcSize() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const mobile = vw < 768;
+    const availH = vh - 60 - (mobile ? 40 : 72);
+    const availW = vw - (mobile ? 24 : 56);
+    const AR = 0.68;
+    let h = Math.min(availH, mobile ? 640 : 780);
+    let w = Math.round(h * AR);
+    const maxW = mobile ? availW : Math.floor(availW / 2) - 6;
+    if (w > maxW) { w = maxW; h = Math.round(w / AR); }
+    w = Math.max(260, Math.min(w, 520));
+    h = Math.max(380, Math.min(h, 760));
+    return { w, h };
+  }
+
+  const { w, h } = calcSize();
+  const mobile   = window.innerWidth < 768;
+
+  const pf = new St.PageFlip(bookEl, {
+    width:               w,
+    height:              h,
+    size:                'fixed',
+    showCover:           true,
+    drawShadow:          true,
+    flippingTime:        780,
+    usePortrait:         mobile,
+    startZIndex:         0,
+    maxShadowOpacity:    0.2,
+    mobileScrollSupport: false,
+    showPageCorners:     !mobile,
+    clickEventForward:   true,
+    swipeDistance:       36,
+    startPage:           0,
+  });
+
+  pf.loadFromHTML(pages);
+
+  function updateIndicator() {
+    indicator.textContent = `${pf.getCurrentPageIndex() + 1} / ${total}`;
+  }
+  pf.on('flip',        updateIndicator);
+  pf.on('changeState', updateIndicator);
+  updateIndicator();
+
+  document.getElementById('btn-prev')
+    .addEventListener('click', () => pf.flipPrev('bottom'));
+  document.getElementById('btn-next')
+    .addEventListener('click', () => pf.flipNext('bottom'));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') pf.flipNext('bottom');
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   pf.flipPrev('bottom');
+  });
+
+  const loader = document.getElementById('loader');
+  loader.classList.add('out');
+  setTimeout(() => loader.remove(), 700);
+}
+</script>
+</body>
+</html>
