@@ -301,8 +301,8 @@
      DETAIL PAGES
   ───────────────────────────────────────── */
   .page.p-detail {
-    padding: 54px 44px;
-    display: flex; flex-direction: column; justify-content: center;
+    padding: 44px 44px 54px;
+    display: flex; flex-direction: column; justify-content: flex-start;
   }
   .d-num {
     font: 300 clamp(52px,7vw,90px)/1 'Cormorant Garamond', serif;
@@ -330,6 +330,7 @@
   #detail-01 .d-desc { font-size: 9.5px; line-height: 1.65; }
   #detail-03 .d-desc { font-size: 9.5px; line-height: 1.65; }
   #detail-04 .d-desc { font-size: 9.5px; line-height: 1.65; }
+  #detail-08 .d-desc { font-size: 9.5px; line-height: 1.65; }
 
   /* ─────────────────────────────────────────
      CONTACT PAGE
@@ -372,6 +373,23 @@
     letter-spacing: .1em; color: var(--muted); flex-shrink: 0; width: 36px;
   }
   .exh-name { font: 400 14px/1.35 'Cormorant Garamond', serif; color: var(--ink); }
+
+  /* ─────────────────────────────────────────
+     EDITIONS + COLLECTORS PAGES
+  ───────────────────────────────────────── */
+  .page.p-editions {
+    padding: 52px 44px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .page.p-collectors {
+    padding: 52px 44px;
+    display: flex; flex-direction: column; justify-content: center;
+    background: var(--ink);
+  }
+  .page.p-collectors .eyebrow { color: var(--gold); }
+  .page.p-collectors .pg-heading { color: #fff; }
+  .page.p-collectors .pg-body   { color: rgba(255,255,255,.6); }
+  .page.p-collectors .pg-num    { color: rgba(255,255,255,.15); }
 
   /* ─────────────────────────────────────────
      CLOSING PAGE (page 16)
@@ -491,7 +509,7 @@
         <div class="pg-body">
           <p>I was born on a plane. literally between worlds, mid-flight, mid-journey, belonging to no single place. I grew up in Shanghai and later studied in New York, Florence, and Paris. I have lived my entire life in the in-between.</p>
           <p>When I moved to the United States as a teenager, I was lost in the way that only displacement can create—not just geographically, but emotionally. I didn't have the words for what I was feeling. So I picked up a brush.</p>
-          <p>Painting gave me what nothing else could: clarity. A way to see myself. A way to process a world that felt overwhelming, beautiful, and confusing all at once. Art didn't just become something I loved—it became how I found direction.</p>
+          <p>Painting gave me what nothing else could: clarity. A way to see myself. A way to process a world that felt overwhelming, beautiful, and confusing all at once. Art didn't just become something I loved. It became how I found direction.</p>
         </div>
         <span class="pg-num l">03</span>
       </div>
@@ -503,7 +521,7 @@
           <p>That experience never left me.</p>
           <p>It became the question I carry into everything I do: what if more people had access to that clarity through my painting? What if art was not only experienced in galleries, but lived with—as a way to understand, to feel, to find clarity.</p>
           <p>This belief continues to shape my work—creating immersive, atmospheric paintings that reflect inner landscapes and emotional states, inviting moments of stillness and reflection.</p>
-          <p>I don't seek to be remembered. I want the work—and the lives it touches—to carry forward long after I'm gone.</p>
+          <p>I don't seek to be remembered. I want the work, and the lives it touches, to carry forward long after I'm gone.</p>
         </div>
         <span class="pg-num r">04</span>
       </div>
@@ -527,15 +545,19 @@
         <span class="eyebrow">Selected Biography</span>
         <h2 class="pg-heading">About<br>the Artist</h2>
         <div class="pg-body">
-          <p>Jenny Yu (b. 1986) is a Manhattan-based artist whose work explores the intersection of emotional healing, memory, and sensory experience. Drawing inspiration from impressionist softness and abstract expression, her paintings evoke a dreamlike stillness — spaces where viewers are invited to slow down, reflect, and reconnect with themselves.</p>
-          <p>With a background in Economics and Art History from NYU, Jenny bridges the analytical and the intuitive. Her practice extends beyond the canvas into immersive art salons and curated experiences, where art becomes not only something to observe, but something to feel.</p>
+          <p>Jenny Yu (b. 1999) is a New York-based artist whose work explores the intangible qualities of beauty—moments that cannot be fully seen, but can be deeply felt.</p>
+          <p>Working primarily with oil and mixed media, she builds her paintings through layers of color, texture, and time. Her process is both intuitive and reflective, allowing forms to emerge, dissolve, and reconfigure organically.</p>
+          <p>Influenced by Impressionism and abstraction, her work draws attention to the subtle tension between presence and absence, clarity and ambiguity. Rather than depicting fixed realities, her paintings invite viewers into a shifting emotional landscape.</p>
         </div>
         <span class="pg-num l">05</span>
       </div>
 
       <!-- 6 · Biography pt 2 ────────────── R of spread 3 -->
       <div class="page p-bio-cont">
-        <p class="bio-closing">Her work is deeply rooted in the belief that art has the power to heal, connect, and transform emotional landscapes.</p>
+        <div class="pg-body">
+          <p>Alongside her studio practice, Jenny creates immersive art experiences and salons that bring people together through shared moments of creativity and reflection.</p>
+          <p>Her work is held in private collections and continues to evolve across both physical and digital formats.</p>
+        </div>
         <span class="pg-num r">06</span>
       </div>
 
@@ -754,7 +776,7 @@
       </div>
 
       <!-- 22 · Artwork 8 detail ──────────── R of spread 11 -->
-      <div class="page p-detail">
+      <div class="page p-detail" id="detail-08">
         <div class="d-num">08</div>
         <h3 class="d-title">Lucid Dreaming</h3>
         <p class="d-desc">I am fascinated by the concept of shadows. Shadows outline the shapes of an object but fill it with voids. On one hand, they reveal the essence of the object. On the other hand, they capture nothing.<br><br>I started this artwork as an oil painting on canvas and later transformed it into a digital piece. I utilized patterns to capture the compounded effects of color, trying to create an illusion of shadows. Then, I used Procreate to transform this traditional oil painting into a digital work. Digital media allows me to magnify such effects of color through the contradiction in colors and saturation. In this way, I am magnifying both nonexistence and existence.</p>
@@ -762,16 +784,47 @@
           <div><div class="sk">Medium</div><div class="sv">Digital Art</div></div>
           <div><div class="sk">Year</div><div class="sv">2022</div></div>
           <div><div class="sk">Dimensions</div><div class="sv">36 × 46 inches, varies</div></div>
-          <div><div class="sk">Available as</div><div class="sv">Glass Wall Art or Prints</div></div>
+          <div><div class="sk">Status</div><div class="sv">Prints available (limited edition)</div></div>
         </div>
         <span class="pg-num r">20</span>
       </div>
 
       <!-- ══════════════════════════════════════
-           SPREAD 10 · Exhibitions + Contact
+           SPREAD 12 · Editions Intro + Collectors
       ══════════════════════════════════════ -->
 
-      <!-- 19 · Exhibitions ──────────────── L of spread 10 -->
+      <!-- Editions Intro ───────────────── L of spread 12 -->
+      <div class="page p-editions">
+        <span class="eyebrow">Editions</span>
+        <h2 class="pg-heading">This<br>Editions</h2>
+        <div class="pg-body">
+          <p>This Editions presents a curated selection of works that explore the space between perception and feeling.</p>
+          <p>These pieces originate from layered oil paintings, later transformed through a process of abstraction and reinterpretation. Forms dissolve, boundaries soften, and what remains is an atmosphere—something sensed rather than defined.</p>
+          <p>Each edition is created as an extension of the original work, preserving its essence while allowing it to exist in new contexts. Subtle variations in texture, color, and depth invite a closer, more personal experience.</p>
+          <p>This body of work reflects an ongoing inquiry into beauty—not as perfection, but as something emerging through imperfection, memory, and imagination.</p>
+        </div>
+        <span class="pg-num l">23</span>
+      </div>
+
+      <!-- Collectors ───────────────────── R of spread 12 -->
+      <div class="page p-collectors">
+        <span class="eyebrow">For Collectors</span>
+        <h2 class="pg-heading">Collecting<br>the Work</h2>
+        <div class="pg-body">
+          <p>Each edition is produced in a limited quantity, ensuring both quality and collectibility.</p>
+          <p>The works are carefully printed to preserve the depth, texture, and tonal subtlety of the original paintings. Attention is given to material, finish, and scale, so that each piece retains a strong visual presence.</p>
+          <p>Editions are released in small batches and may not be reprinted once sold out.</p>
+          <p>These works are intended for collectors who are drawn to atmospheric, contemplative imagery and are interested in acquiring pieces that exist at the intersection of painting and abstraction.</p>
+          <p>For inquiries regarding availability, commissions, or larger works, please get in touch directly.</p>
+        </div>
+        <span class="pg-num r">24</span>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SPREAD 13 · Exhibitions + Contact
+      ══════════════════════════════════════ -->
+
+      <!-- Exhibitions ──────────────────── L of spread 13 -->
       <div class="page p-exh">
         <span class="eyebrow">Selected Exhibitions</span>
         <h2 class="pg-heading">Exhibition<br>History</h2>
