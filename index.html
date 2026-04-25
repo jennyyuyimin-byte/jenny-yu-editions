@@ -305,32 +305,35 @@
     display: flex; flex-direction: column; justify-content: flex-start;
   }
   .d-num {
-    font: 300 clamp(52px,7vw,90px)/1 'Cormorant Garamond', serif;
-    color: var(--rule); margin-bottom: 18px;
+    font: 300 48px/1 'Cormorant Garamond', serif;
+    color: var(--rule); margin-bottom: 8px;
   }
   .d-title {
-    font: 400 clamp(20px,2.4vw,30px)/1.15 'Cormorant Garamond', serif;
-    letter-spacing: .02em; color: var(--ink); margin-bottom: 16px;
+    font: 400 clamp(18px,2.2vw,24px)/1.15 'Cormorant Garamond', serif;
+    letter-spacing: .02em; color: var(--ink); margin-bottom: 10px;
   }
   .d-desc {
-    font: 300 clamp(11px,1.05vw,13px)/1.95 'Inter', sans-serif;
-    color: #676460; margin-bottom: 28px;
+    font: 300 11.5px/1.85 'Inter', sans-serif;
+    color: #676460; margin-bottom: 18px;
   }
   .specs {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 14px 6px;
-    border-top: 1px solid var(--rule); padding-top: 20px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px 6px;
+    border-top: 1px solid var(--rule); padding-top: 14px;
   }
   .sk {
     font: 400 8.5px/1 'Inter', sans-serif;
     letter-spacing: .24em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
   }
-  .sv { font: 400 13.5px/1 'Cormorant Garamond', serif; color: var(--ink); }
+  .sv { font: 400 13px/1 'Cormorant Garamond', serif; color: var(--ink); }
 
-  /* long descriptions — only shrink the description text */
-  #detail-01 .d-desc { font-size: 9.5px; line-height: 1.65; }
-  #detail-03 .d-desc { font-size: 9.5px; line-height: 1.65; }
-  #detail-04 .d-desc { font-size: 9.5px; line-height: 1.65; }
-  #detail-08 .d-desc { font-size: 9.5px; line-height: 1.65; }
+  /* long descriptions — shrink only what needs it */
+  #detail-01 .d-desc,
+  #detail-04 .d-desc,
+  #detail-08 .d-desc { font-size: 10px; line-height: 1.78; }
+
+  /* detail-03 — extra-long, needs the most reduction */
+  #detail-03 .d-desc { font-size: 9px; line-height: 1.72; margin-bottom: 12px; }
+  #detail-03 .specs  { padding-top: 10px; gap: 8px 6px; }
 
   /* ─────────────────────────────────────────
      CONTACT PAGE
@@ -803,7 +806,7 @@
       <!-- Editions Intro ───────────────── L of spread 12 -->
       <div class="page p-editions">
         <span class="eyebrow">Editions</span>
-        <h2 class="pg-heading">This<br>Editions</h2>
+        <h2 class="pg-heading">This Editions</h2>
         <div class="pg-body">
           <p>This Editions presents a curated selection of works that explore the space between perception and feeling.</p>
           <p>These pieces originate from layered oil paintings, later transformed through a process of abstraction and reinterpretation. Forms dissolve, boundaries soften, and what remains is an atmosphere—something sensed rather than defined.</p>
