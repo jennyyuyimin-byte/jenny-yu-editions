@@ -377,18 +377,25 @@
   /* ─────────────────────────────────────────
      EDITIONS + COLLECTORS PAGES
   ───────────────────────────────────────── */
-  .page.p-editions {
-    padding: 52px 44px;
-    display: flex; flex-direction: column; justify-content: center;
-  }
+  .page.p-editions,
   .page.p-collectors {
-    padding: 52px 44px;
+    padding: 60px 46px;
     display: flex; flex-direction: column; justify-content: center;
-    background: var(--ink);
   }
+  .page.p-collectors { background: var(--ink); }
+
+  .page.p-editions .pg-body,
+  .page.p-collectors .pg-body {
+    font: 300 7.8px/2 'Inter', sans-serif;
+    letter-spacing: .025em;
+    max-width: 36ch;
+  }
+  .page.p-editions .pg-body p + p,
+  .page.p-collectors .pg-body p + p { margin-top: .6em; }
+
   .page.p-collectors .eyebrow { color: var(--gold); }
   .page.p-collectors .pg-heading { color: #fff; }
-  .page.p-collectors .pg-body   { color: rgba(255,255,255,.6); }
+  .page.p-collectors .pg-body   { color: rgba(255,255,255,.55); }
   .page.p-collectors .pg-num    { color: rgba(255,255,255,.15); }
 
   /* ─────────────────────────────────────────
