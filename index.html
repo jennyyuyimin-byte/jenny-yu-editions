@@ -47,9 +47,9 @@
     min-height: 0;
   }
 
-  /* ensure pages beneath the flipping page are visible during animation */
-  .stf__parent { overflow: visible !important; }
-  .stf__block  { overflow: visible !important; }
+  /* page flip container */
+  .stf__parent { overflow: hidden; }
+  .stf__block  { overflow: hidden; }
 
   /* ─────────────────────────────────────────
      CONTROLS
@@ -466,6 +466,13 @@
     .page.p-title        { padding: 40px 28px; }
     .pg-num.l            { left: 22px; }
     .pg-num.r            { right: 22px; }
+
+    /* hide the decorative inside-cover on mobile — near-invisible alone */
+    .page.p-deco { display: none; }
+
+    /* continuation pages: anchor content to top so they don't look empty */
+    .page.p-stmt-cont { justify-content: flex-start; padding-top: 56px; }
+    .page.p-bio-cont  { justify-content: flex-start; padding-top: 56px; }
   }
   </style>
 </head>
@@ -890,8 +897,16 @@ window.addEventListener('load', () => setTimeout(init, 500));
 function init() {
   const bookEl    = document.getElementById('book');
   const indicator = document.getElementById('indicator');
-  const pages     = document.querySelectorAll('.page');
-  const total     = pages.length; // 18
+
+  const mobile = window.innerWidth < 768;
+
+  // on mobile, remove purely decorative pages that look blank in single-page mode
+  if (mobile) {
+    document.querySelectorAll('.page.p-deco').forEach(el => el.remove());
+  }
+
+  const pages = document.querySelectorAll('.page');
+  const total = pages.length;
 
   function calcSize() {
     const vw = window.innerWidth;
@@ -910,7 +925,6 @@ function init() {
   }
 
   const { w, h } = calcSize();
-  const mobile   = window.innerWidth < 768;
 
   const pf = new St.PageFlip(bookEl, {
     width:               w,
